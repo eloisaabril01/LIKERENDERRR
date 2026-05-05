@@ -116,7 +116,7 @@ function recordEntry(data, uid, server, apiData, type) {
 
 // Serve dashboard
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'freelike-v3.html'));
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // Get all data
