@@ -30,7 +30,7 @@ const PORT = process.env.PORT || 3000;
 const DB   = path.join(__dirname, 'freelike_data.json');
 
 app.use(express.json());
-app.use(express.static(__dirname)); // serve HTML from same folder
+app.use(express.static(path.join(__dirname, 'public'))); // serve HTML from same folder
 
 // ── DATABASE ──────────────────────────────────────────────────
 function loadDB() {
@@ -116,7 +116,7 @@ function recordEntry(data, uid, server, apiData, type) {
 
 // Serve dashboard
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Get all data
