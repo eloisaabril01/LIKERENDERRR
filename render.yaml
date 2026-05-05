@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: freelike-dashboard
+    runtime: node
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: RENDER_EXTERNAL_URL
+        fromService:
+          type: web
+          name: freelike-dashboard
+          property: host

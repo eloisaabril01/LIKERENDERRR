@@ -1,0 +1,14 @@
+{
+  "name": "freelike-server",
+  "version": "3.0.0",
+  "description": "FreeLike Auto Liker - 24/7 Server with Cron",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "node-cron": "^3.0.3",
+    "node-fetch": "^2.7.0"
+  }
+}
