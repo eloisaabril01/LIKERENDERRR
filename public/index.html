@@ -107,7 +107,6 @@
   .chart-title{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:3px;color:var(--accent3);margin-bottom:14px}
   .report-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:20px}
 
-  /* UID Manager Cards */
   .uid-card{background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:16px;position:relative;transition:border-color 0.2s,transform 0.2s;margin-bottom:12px}
   .uid-card:hover{border-color:var(--accent2);transform:translateY(-1px)}
   .uid-card.active-sched{border-color:rgba(0,240,255,0.4);background:rgba(0,240,255,0.03)}
@@ -121,22 +120,6 @@
   .uid-actions{display:flex;gap:8px;flex-wrap:wrap}
   .sched-tag{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;background:rgba(0,240,255,0.1);border:1px solid rgba(0,240,255,0.3);border-radius:20px;font-size:10px;color:var(--accent3);font-weight:700;letter-spacing:1px}
 
-  /* UID List Table */
-  .uid-list-wrap{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden}
-  .uid-list-head{display:grid;grid-template-columns:1fr 80px 80px 80px 100px 90px 130px 100px;padding:12px 16px;border-bottom:1px solid var(--border);gap:8px}
-  .uid-list-row{display:grid;grid-template-columns:1fr 80px 80px 80px 100px 90px 130px 100px;padding:12px 16px;border-bottom:1px solid rgba(30,30,53,0.5);gap:8px;transition:background 0.2s;align-items:center}
-  .uid-list-row:last-child{border-bottom:none}
-  .uid-list-row:hover{background:var(--surface2)}
-  .ulh{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
-
-  /* Countdown */
-  .cd-small{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;color:var(--accent3)}
-
-  /* Add UID form */
-  .add-uid-form{background:rgba(123,47,255,0.05);border:1px solid rgba(123,47,255,0.2);border-radius:14px;padding:20px;margin-bottom:20px}
-  .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
-
-  /* Schedule Overview */
   .sched-overview{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:20px}
   .sched-item{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;position:relative;overflow:hidden}
   .sched-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--accent3),var(--accent2))}
@@ -146,12 +129,30 @@
   .sched-uid-txt{font-size:10px;color:var(--muted)}
   .sched-time-big{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:3px;color:var(--accent3);line-height:1;margin:8px 0 4px}
   .sched-cd{font-size:10px;color:var(--muted)}
+  .cd-small{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;color:var(--accent3)}
 
-  /* Quick Send for UID list */
-  .quick-send-panel{background:rgba(255,60,172,0.03);border:1px solid rgba(255,60,172,0.15);border-radius:12px;padding:14px;margin-top:14px;display:none}
-  .quick-send-panel.show{display:block}
+  .add-uid-form{background:rgba(123,47,255,0.05);border:1px solid rgba(123,47,255,0.2);border-radius:14px;padding:20px;margin-bottom:20px}
+  .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
 
-  /* Modal */
+  .queue-panel{background:rgba(0,240,255,0.04);border:1px solid rgba(0,240,255,0.25);border-radius:18px;padding:22px;margin-bottom:22px;display:none}
+  .queue-panel.show{display:block}
+  .queue-title{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:3px;color:var(--accent3);margin-bottom:14px;display:flex;align-items:center;gap:10px}
+  .queue-progress-bar{height:6px;background:var(--surface2);border-radius:3px;overflow:hidden;margin-bottom:16px}
+  .queue-progress-fill{height:100%;background:linear-gradient(90deg,var(--accent3),var(--accent2));border-radius:3px;transition:width 0.5s ease}
+  .queue-grid{display:flex;flex-direction:column;gap:8px}
+  .queue-row{display:grid;grid-template-columns:28px 1fr 90px 120px 110px;gap:10px;align-items:center;padding:10px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;font-size:11px;transition:all 0.3s}
+  .queue-row.q-waiting{opacity:0.45}
+  .queue-row.q-running{border-color:var(--accent3);background:rgba(0,240,255,0.07);opacity:1}
+  .queue-row.q-delay{border-color:var(--warn);background:rgba(255,152,0,0.06);opacity:1}
+  .queue-row.q-done-ok{border-color:var(--success);background:rgba(0,230,118,0.05);opacity:1}
+  .queue-row.q-done-fail{border-color:var(--danger);background:rgba(255,23,68,0.05);opacity:1}
+  .q-nick{font-weight:700;color:var(--gold);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .q-uid-txt{font-size:9px;color:var(--muted);margin-top:2px}
+  .delay-banner{text-align:center;padding:18px;background:rgba(255,152,0,0.08);border:1px solid rgba(255,152,0,0.25);border-radius:12px;margin-bottom:16px;display:none}
+  .delay-banner.show{display:block}
+  .delay-cd-big{font-family:'Bebas Neue',sans-serif;font-size:52px;letter-spacing:6px;color:var(--warn);line-height:1}
+  .delay-lbl{font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:6px}
+
   .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9000;display:none;align-items:center;justify-content:center;padding:20px}
   .modal-overlay.show{display:flex}
   .modal{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:28px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;position:relative}
@@ -178,26 +179,10 @@
   .toggle input:checked+.slider{background:linear-gradient(135deg,var(--accent),var(--accent2))}
   .toggle input:checked+.slider::before{transform:translateX(20px);background:#fff;box-shadow:0 0 8px rgba(255,60,172,0.6)}
 
-  /* ── QUEUE PANEL ── */
-  .queue-panel{background:rgba(0,240,255,0.04);border:1px solid rgba(0,240,255,0.25);border-radius:18px;padding:22px;margin-bottom:22px;display:none}
-  .queue-panel.show{display:block}
-  .queue-title{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:3px;color:var(--accent3);margin-bottom:14px;display:flex;align-items:center;gap:10px}
-  .queue-progress-bar{height:6px;background:var(--surface2);border-radius:3px;overflow:hidden;margin-bottom:16px}
-  .queue-progress-fill{height:100%;background:linear-gradient(90deg,var(--accent3),var(--accent2));border-radius:3px;transition:width 0.5s ease}
-  .queue-grid{display:flex;flex-direction:column;gap:8px}
-  .queue-row{display:grid;grid-template-columns:28px 1fr 90px 120px 110px;gap:10px;align-items:center;padding:10px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;font-size:11px;transition:all 0.3s}
-  .queue-row.q-waiting{opacity:0.45}
-  .queue-row.q-running{border-color:var(--accent3);background:rgba(0,240,255,0.07);opacity:1}
-  .queue-row.q-delay{border-color:var(--warn);background:rgba(255,152,0,0.06);opacity:1}
-  .queue-row.q-done-ok{border-color:var(--success);background:rgba(0,230,118,0.05);opacity:1}
-  .queue-row.q-done-fail{border-color:var(--danger);background:rgba(255,23,68,0.05);opacity:1}
-  .q-nick{font-weight:700;color:var(--gold);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .q-uid-txt{font-size:9px;color:var(--muted);margin-top:2px}
-  .delay-banner{text-align:center;padding:18px;background:rgba(255,152,0,0.08);border:1px solid rgba(255,152,0,0.25);border-radius:12px;margin-bottom:16px;display:none}
-  .delay-banner.show{display:block}
-  .delay-cd-big{font-family:'Bebas Neue',sans-serif;font-size:52px;letter-spacing:6px;color:var(--warn);line-height:1}
-  .delay-lbl{font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:6px}
-  .delay-info{font-size:10px;color:var(--warn);letter-spacing:1px;margin-top:4px}
+  /* Server-side cron info banner */
+  .server-cron-info{background:rgba(0,240,255,0.06);border:1px solid rgba(0,240,255,0.25);border-radius:12px;padding:14px 18px;margin-bottom:18px;font-size:11px;color:var(--accent3);line-height:1.8;letter-spacing:0.5px}
+  .server-cron-info strong{color:#fff}
+
   @media(max-width:700px){
     .uid-stats{grid-template-columns:repeat(2,1fr)}
     .queue-row{grid-template-columns:24px 1fr 80px 90px}
@@ -241,6 +226,7 @@
     <div class="sc"><div class="sl">Total UIDs</div><div class="sv gr" id="s-uids">—</div><div class="ss">Managed profiles</div></div>
     <div class="sc"><div class="sl">Active Schedules</div><div class="sv w" id="s-active-sched">—</div><div class="ss">Running on server</div></div>
     <div class="sc"><div class="sl">Total Sessions</div><div class="sv p" id="s-sessions">—</div><div class="ss">Manual + Auto</div></div>
+    <div class="sc"><div class="sl">Auto Runs</div><div class="sv gr" id="s-autoruns">—</div><div class="ss">Server cron fires</div></div>
     <div class="sc"><div class="sl">Last Run</div><div class="sv w" style="font-size:16px;padding-top:8px" id="s-lastrun">—</div><div class="ss" id="s-lastrun-sub">Never</div></div>
   </div>
 
@@ -305,7 +291,6 @@
 
 <!-- UID MANAGER -->
 <div class="tab-panel" id="tab-uids">
-  <!-- Add UID Form -->
   <div class="add-uid-form">
     <div class="pt">➕ Add New UID</div>
     <div class="form-grid">
@@ -335,7 +320,6 @@
     </div>
   </div>
 
-  <!-- UID List Table -->
   <div class="panel">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
       <div class="pt" style="margin-bottom:0">👥 All UIDs (<span id="uid-count">0</span>)</div>
@@ -350,64 +334,63 @@
 
 <!-- SCHEDULES -->
 <div class="tab-panel" id="tab-schedules">
+  <div class="server-cron-info">
+    🖥️ <strong>Server-Side Cron Active</strong> — Schedules run on the server 24/7. <strong>You don't need to keep this page open.</strong>
+    The server checks every minute and fires likes automatically. Stats update when you next visit.
+  </div>
+
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px">
     <div class="pt" style="margin-bottom:0">⏰ Schedule Manager</div>
     <div class="hstat"><div class="dot cyan" id="sched-active-count-dot"></div><span id="sched-active-count-txt" style="font-size:12px;color:var(--accent3)">0 active schedules</span></div>
   </div>
 
-  <!-- Schedule list per UID -->
   <div id="schedules-grid" class="sched-overview">
     <div class="empty" style="grid-column:1/-1;padding:60px"><div class="big">⏰</div>Add UIDs first, then set schedules here</div>
   </div>
 
-  <!-- LIVE QUEUE PANEL -->
+  <!-- LIVE QUEUE PANEL (browser-side manual queue only) -->
   <div class="queue-panel" id="queue-panel">
-    <div class="queue-title"><span class="spinner" id="queue-spinner"></span>&nbsp;<span id="queue-title-txt">Auto-Like Queue Running...</span></div>
-
+    <div class="queue-title"><span class="spinner" id="queue-spinner"></span>&nbsp;<span id="queue-title-txt">Manual Queue Running...</span></div>
     <div class="delay-banner" id="delay-banner">
       <div class="delay-cd-big" id="delay-cd-big">60</div>
       <div class="delay-lbl" id="delay-lbl-txt">Waiting 60s before next UID...</div>
     </div>
-
     <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:6px">
       <span id="queue-progress-txt">0 / 0 done</span>
       <span id="queue-eta">ETA: —</span>
     </div>
     <div class="queue-progress-bar"><div class="queue-progress-fill" id="queue-progress-fill" style="width:0%"></div></div>
-
     <div class="queue-grid" id="queue-grid"></div>
-
     <button class="btn bd" style="margin-top:14px;width:100%" onclick="cancelQueue()">✕ Cancel Queue</button>
   </div>
 
-  <!-- Global schedule controls -->
+  <!-- Global controls -->
   <div class="panel" style="margin-top:20px">
     <div class="pt">🌐 Bulk Actions</div>
     <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px">
-      <button class="btn bp" id="btn-send-all" onclick="runAllNow()" style="flex:1;min-width:220px">🚀 Send All UIDs Now (60s delay each)</button>
+      <button class="btn bp" id="btn-send-all" onclick="runAllNow()" style="flex:1;min-width:220px">🚀 Send All Enabled UIDs Now</button>
     </div>
     <div style="display:flex;gap:10px;flex-wrap:wrap">
       <button class="btn bc" onclick="enableAllSchedules()">✅ Enable All Schedules</button>
       <button class="btn bd" onclick="disableAllSchedules()">⏸ Disable All</button>
       <button class="btn bs" onclick="loadAll()">🔄 Refresh</button>
     </div>
-    <div style="font-size:10px;color:var(--muted);margin-top:12px;letter-spacing:1px;line-height:1.7">
-      ⏱ &nbsp;<b style="color:var(--accent3)">Send All UIDs Now</b> — fires all enabled UIDs one-by-one with a <b style="color:var(--warn)">60-second delay</b> between each to avoid API rate limits.<br>
-      ⏰ &nbsp;Auto schedules also respect the same 60s delay — each UID fires 60s after the previous one completes.
+    <div style="font-size:10px;color:var(--muted);margin-top:12px;letter-spacing:1px;line-height:1.8">
+      ⏰ &nbsp;Schedules run <b style="color:var(--accent3)">server-side</b> — no browser needed.<br>
+      🚀 &nbsp;<b style="color:var(--accent3)">Send All Now</b> triggers an immediate manual queue with 60s delay between UIDs.<br>
+      🔁 &nbsp;Auto-cron also uses 60s delay between UIDs at scheduled time.
     </div>
   </div>
 </div>
 
 <!-- REPORTS -->
 <div class="tab-panel" id="tab-reports">
-  <!-- Summary Stats -->
   <div class="stats-row" style="margin-bottom:20px">
     <div class="sc"><div class="sl">Total Likes</div><div class="sv p" id="rp-total">—</div><div class="ss">All time</div></div>
     <div class="sc"><div class="sl">Success Rate</div><div class="sv gr" id="rp-rate">—</div><div class="ss">All sessions</div></div>
     <div class="sc"><div class="sl">Best Day</div><div class="sv g" id="rp-bestday">—</div><div class="ss" id="rp-bestday-date">—</div></div>
     <div class="sc"><div class="sl">Auto Runs</div><div class="sv w" id="rp-auto">—</div><div class="ss">Server cron</div></div>
   </div>
-
   <div class="report-grid" style="margin-bottom:20px">
     <div class="chart-panel"><div class="chart-title">📅 Likes Per Day (14 Days)</div><div id="ch-daily"></div></div>
     <div class="chart-panel"><div class="chart-title">👥 Likes Per UID</div><div id="ch-uid"></div></div>
@@ -416,8 +399,6 @@
     <div class="chart-panel"><div class="chart-title">✅ Success Rate</div><div id="ch-success"></div></div>
     <div class="chart-panel"><div class="chart-title">🕐 Hour Distribution</div><div id="ch-hour"></div></div>
   </div>
-
-  <!-- Daily Summary Table -->
   <div class="panel" style="margin-bottom:18px">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
       <div class="pt" style="margin-bottom:0">📆 Daily Summary</div>
@@ -428,8 +409,6 @@
       <tbody id="daily-tbody"></tbody>
     </table></div>
   </div>
-
-  <!-- Per UID Report Table -->
   <div class="panel">
     <div class="pt" style="margin-bottom:16px">👥 Per-UID Breakdown</div>
     <div class="hw"><table>
@@ -483,6 +462,7 @@
         <div class="ss-row"><span class="ss-key">Total Records</span><span class="ss-val" id="set-records">—</span></div>
         <div class="ss-row"><span class="ss-key">Total UIDs</span><span class="ss-val" id="set-uids">—</span></div>
         <div class="ss-row"><span class="ss-key">Total Likes</span><span class="ss-val" id="set-likes">—</span></div>
+        <div class="ss-row"><span class="ss-key">Cron Queue Running</span><span class="ss-val" id="set-cron-running">—</span></div>
       </div>
       <button class="btn bs" onclick="loadStatus()" style="width:100%">🔄 Refresh Status</button>
     </div>
@@ -511,15 +491,15 @@
     <button class="modal-close" onclick="closeSchedModal()">✕ Close</button>
     <div class="pt" style="margin-bottom:20px" id="modal-title">⏰ Edit Schedule</div>
     <input type="hidden" id="modal-uid-id">
-
     <div class="toggle-row" style="margin-bottom:16px">
-      <div><div class="tl">Enable Auto-Like</div><div class="ts">Runs on server 24/7 — no browser needed</div></div>
+      <div>
+        <div class="tl">Enable Auto-Like</div>
+        <div class="ts">Runs on server 24/7 — no browser needed</div>
+      </div>
       <label class="toggle"><input type="checkbox" id="modal-enabled"><span class="slider"></span></label>
     </div>
-
     <label>Schedule Time (IST)</label>
     <input type="time" id="modal-time" value="06:00">
-
     <label>Override Server (optional)</label>
     <select id="modal-server">
       <option value="">— Use UID default server —</option>
@@ -531,10 +511,6 @@
       <option value="sac">🌎 South America (SAC)</option>
       <option value="me">🌍 Middle East (ME)</option>
     </select>
-
-    <label>Max Likes per Day (0 = unlimited)</label>
-    <input type="text" id="modal-maxlikes" placeholder="0" style="margin-bottom:20px">
-
     <button class="btn bp" onclick="saveSchedModal()">💾 Save Schedule</button>
   </div>
 </div>
@@ -571,19 +547,17 @@
 <div id="toast"></div>
 
 <script>
-// ── DATA STRUCTURE ─────────────────────────────────────────────
-// appData = { history:[], stats:{}, uids:[], schedules:{uid_id: {enabled,time,server,maxLikes}} }
+// ── APP STATE ──────────────────────────────────────────────────
 let appData = { history:[], stats:{}, uids:[], schedules:{} };
-let cdIntervals = {}; // { uid_id: intervalId }
-
+let cdIntervals = {};
 const SERVERS = {ind:'IND 🇮🇳',sg:'SG 🇸🇬',us:'US 🇺🇸',br:'BR 🇧🇷',id:'ID 🇮🇩',sac:'SAC 🌎',me:'ME 🌍'};
+const pad = n => String(n).padStart(2,'0');
 
 // ── INIT ──────────────────────────────────────────────────────
 async function init() {
   startClock();
-  loadLocal(); // load from localStorage
+  loadLocal();
   renderAll();
-  // Try server
   try {
     await loadAll();
     await loadStatus();
@@ -592,11 +566,12 @@ async function init() {
     setServerStatus(false);
     toast('⚠️ Server offline — using local data', 'warn');
   }
-  setInterval(() => { loadStatus().catch(()=>{}); }, 30000);
-  setInterval(() => { loadAll().catch(()=>{}); }, 60000);
+  // Refresh from server every 30s (picks up auto-run stats without browser open)
+  setInterval(() => loadStatus().catch(()=>{}), 30000);
+  setInterval(() => loadAll().catch(()=>{}), 30000);
 }
 
-// ── LOCAL STORAGE (FALLBACK + UID LIST) ───────────────────────
+// ── LOCAL STORAGE ─────────────────────────────────────────────
 function loadLocal() {
   try {
     const d = JSON.parse(localStorage.getItem('freelike_v3') || '{}');
@@ -608,35 +583,61 @@ function loadLocal() {
 }
 
 function saveLocal() {
-  localStorage.setItem('freelike_v3', JSON.stringify(appData));
+  try { localStorage.setItem('freelike_v3', JSON.stringify(appData)); } catch(e) {}
 }
 
-// ── SERVER LOAD ───────────────────────────────────────────────
+// ── SERVER: LOAD ALL DATA ─────────────────────────────────────
 async function loadAll() {
   const res = await fetch('/api/data');
+  if (!res.ok) throw new Error('Server error');
   const d = await res.json();
+  // Server is source of truth for history and stats
   if (d.history) appData.history = d.history;
   if (d.stats) appData.stats = d.stats;
-  if (d.uids) appData.uids = d.uids;
-  if (d.schedules) appData.schedules = d.schedules;
+  // For uids/schedules: merge server data (server wins if it has data)
+  if (d.uids && d.uids.length > 0) appData.uids = d.uids;
+  if (d.schedules && Object.keys(d.schedules).length > 0) appData.schedules = d.schedules;
   saveLocal();
   renderAll();
   setServerStatus(true);
 }
 
+// ── SERVER: SAVE UIDs + SCHEDULES ─────────────────────────────
+// This is the ONLY endpoint used to save UID/schedule changes to server
+async function saveToServer() {
+  try {
+    const res = await fetch('/api/uids', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ uids: appData.uids, schedules: appData.schedules })
+    });
+    if (!res.ok) throw new Error('Save failed');
+    const r = await res.json();
+    console.log('✅ Saved to server:', r);
+    return true;
+  } catch(e) {
+    console.error('saveToServer failed:', e.message);
+    toast('⚠️ Save to server failed — changes saved locally only', 'warn');
+    return false;
+  }
+}
+
+// ── SERVER: STATUS ────────────────────────────────────────────
 async function loadStatus() {
   const res = await fetch('/api/status');
+  if (!res.ok) throw new Error('Status error');
   const s = await res.json();
   document.getElementById('set-uptime').textContent = formatUptime(s.uptime||0);
   document.getElementById('set-time').textContent = s.serverTime||'—';
-  const activeCount = Object.values(appData.schedules||{}).filter(sc=>sc.enabled).length;
-  document.getElementById('set-sched').textContent = activeCount + ' active';
+  document.getElementById('set-sched').textContent = (s.activeSchedules||0) + ' active';
   document.getElementById('set-records').textContent = s.totalRecords||appData.history.length;
-  document.getElementById('set-uids').textContent = appData.uids.length;
+  document.getElementById('set-uids').textContent = s.totalUIDs||appData.uids.length;
   document.getElementById('set-likes').textContent = s.totalLikes||appData.stats.total||0;
-  const hasCron = activeCount > 0;
-  document.getElementById('cronDot').className = 'dot ' + (hasCron?'cyan':'red');
-  document.getElementById('cronStatus').textContent = hasCron ? 'CRON: '+activeCount+' active' : 'CRON: OFF';
+  document.getElementById('set-cron-running').textContent = s.cronQueueRunning ? '🔄 YES' : '⏸ NO';
+
+  const active = s.activeSchedules || 0;
+  document.getElementById('cronDot').className = 'dot '+(active>0?'cyan':'red');
+  document.getElementById('cronStatus').textContent = active>0 ? 'CRON: '+active+' active' : 'CRON: OFF';
 }
 
 function formatUptime(s) {
@@ -652,7 +653,7 @@ function setServerStatus(ok) {
 // ── UID MANAGEMENT ────────────────────────────────────────────
 function genId() { return 'uid_' + Date.now() + '_' + Math.random().toString(36).substr(2,5); }
 
-function addUID() {
+async function addUID() {
   const uid = document.getElementById('new-uid').value.trim();
   const nick = document.getElementById('new-nick').value.trim() || ('Player_'+uid.substring(0,6));
   const server = document.getElementById('new-server').value;
@@ -662,30 +663,30 @@ function addUID() {
   document.getElementById('new-uid').value = '';
   document.getElementById('new-nick').value = '';
   saveLocal();
-  saveToServer();
+  await saveToServer(); // ← saves to server immediately
   renderAll();
   toast('✅ UID added: ' + nick, 'ok');
 }
 
-function removeUID(id) {
+async function removeUID(id) {
   if (!confirm('Remove this UID from manager?')) return;
   appData.uids = appData.uids.filter(u=>u.id!==id);
   delete appData.schedules[id];
   if (cdIntervals[id]) { clearInterval(cdIntervals[id]); delete cdIntervals[id]; }
   saveLocal();
-  saveToServer();
+  await saveToServer();
   renderAll();
   toast('🗑 UID removed','warn');
 }
 
-function clearAllUIDs() {
+async function clearAllUIDs() {
   if (!confirm('Remove ALL UIDs?')) return;
   appData.uids = [];
   appData.schedules = {};
   Object.values(cdIntervals).forEach(clearInterval);
   cdIntervals = {};
   saveLocal();
-  saveToServer();
+  await saveToServer();
   renderAll();
   toast('🗑 All UIDs cleared','warn');
 }
@@ -700,25 +701,32 @@ function openSchedModal(id) {
   document.getElementById('modal-enabled').checked = !!sc.enabled;
   document.getElementById('modal-time').value = sc.time || '06:00';
   document.getElementById('modal-server').value = sc.server || '';
-  document.getElementById('modal-maxlikes').value = sc.maxLikes || '0';
   document.getElementById('sched-modal').classList.add('show');
 }
 
 function closeSchedModal() { document.getElementById('sched-modal').classList.remove('show'); }
 
-function saveSchedModal() {
+async function saveSchedModal() {
   const id = document.getElementById('modal-uid-id').value;
   appData.schedules[id] = {
     enabled: document.getElementById('modal-enabled').checked,
     time: document.getElementById('modal-time').value,
-    server: document.getElementById('modal-server').value,
-    maxLikes: parseInt(document.getElementById('modal-maxlikes').value)||0
+    server: document.getElementById('modal-server').value
   };
   saveLocal();
-  saveToServer();
+  await saveToServer(); // ← saves schedule to server so cron picks it up
   closeSchedModal();
   renderAll();
-  toast('💾 Schedule saved!','ok');
+  toast('💾 Schedule saved to server!','ok');
+}
+
+async function toggleSchedUID(id, enabled) {
+  if (!appData.schedules[id]) appData.schedules[id] = { time:'06:00' };
+  appData.schedules[id].enabled = enabled;
+  saveLocal();
+  await saveToServer();
+  renderAll();
+  toast(enabled?'⏰ Schedule enabled on server!':'⏸ Schedule disabled','ok');
 }
 
 async function enableAllSchedules() {
@@ -729,7 +737,7 @@ async function enableAllSchedules() {
   saveLocal();
   await saveToServer();
   renderAll();
-  toast('✅ All schedules enabled','ok');
+  toast('✅ All schedules enabled on server','ok');
 }
 
 async function disableAllSchedules() {
@@ -745,7 +753,7 @@ async function sendLike() {
   const uid = document.getElementById('uid').value.trim();
   const server = document.getElementById('server').value;
   if (!uid) { toast('⚠️ Enter a UID!','warn'); return; }
-  await doSendLike(uid, server, 'btnLike', 'btnTxt', 'rbox', 'r-', false);
+  await doSendLike(uid, server, 'btnLike', 'btnTxt', 'rbox', 'r-');
 }
 
 function openSendModal(uid, server, nick) {
@@ -761,10 +769,10 @@ function closeSendModal() { document.getElementById('send-modal').classList.remo
 async function sendLikeModal() {
   const uid = document.getElementById('send-modal-uid').value;
   const server = document.getElementById('send-modal-server').value;
-  await doSendLike(uid, server, 'send-modal-btn', 'send-modal-txt', 'send-modal-rbox', 'sm-', true);
+  await doSendLike(uid, server, 'send-modal-btn', 'send-modal-txt', 'send-modal-rbox', 'sm-');
 }
 
-async function doSendLike(uid, server, btnId, txtId, boxId, prefix, isModal) {
+async function doSendLike(uid, server, btnId, txtId, boxId, prefix) {
   document.getElementById(btnId).disabled = true;
   document.getElementById(txtId).innerHTML = '<span class="spinner"></span> Sending...';
   try {
@@ -793,9 +801,12 @@ async function doSendLike(uid, server, btnId, txtId, boxId, prefix, isModal) {
     }
     burst();
     toast(`✅ +${result.entry?.given||0} likes → ${d.PlayerNickname||uid}`, 'ok');
-    // Update UID nickname from API if matched
     const u = appData.uids.find(u=>String(u.uid)===String(uid));
-    if (u && d.PlayerNickname) { u.nick = d.PlayerNickname; saveLocal(); }
+    if (u && d.PlayerNickname && u.nick !== d.PlayerNickname) {
+      u.nick = d.PlayerNickname;
+      saveLocal();
+      await saveToServer();
+    }
     await loadAll().catch(()=>{});
   } catch(e) {
     toast('❌ Error: ' + e.message, 'err');
@@ -824,7 +835,6 @@ function renderAll() {
   renderHistory();
   renderReports();
   renderQuickSelect();
-  renderHistoryUIDFilter();
 }
 
 function renderStats() {
@@ -832,15 +842,15 @@ function renderStats() {
   document.getElementById('s-total').textContent = (s.total||0).toLocaleString();
   document.getElementById('s-today').textContent = (s.today||0).toLocaleString();
   document.getElementById('s-uids').textContent = appData.uids.length;
-  const activeScheds = Object.values(appData.schedules).filter(sc=>sc.enabled).length;
+  const activeScheds = Object.values(appData.schedules).filter(sc=>sc&&sc.enabled).length;
   document.getElementById('s-active-sched').textContent = activeScheds;
   document.getElementById('s-sessions').textContent = (s.sessions||0).toLocaleString();
+  document.getElementById('s-autoruns').textContent = (s.autoRuns||0).toLocaleString(); // ← fixed: was missing
   document.getElementById('s-today-date').textContent = s.todayDate?'Date: '+s.todayDate:'—';
   if (s.lastRun) {
     document.getElementById('s-lastrun').textContent = s.lastRun.substring(11,19);
     document.getElementById('s-lastrun-sub').textContent = s.lastRun.substring(0,10);
   }
-  // Active sched count badge
   document.getElementById('sched-active-count-dot').className = 'dot '+(activeScheds>0?'cyan':'red');
   document.getElementById('sched-active-count-txt').textContent = activeScheds + ' active schedule' + (activeScheds!==1?'s':'');
 }
@@ -864,6 +874,9 @@ function renderUIDs() {
   const el = document.getElementById('uid-cards-list');
   if (!uids.length) {
     el.innerHTML = `<div class="empty"><div class="big">👥</div>${appData.uids.length?'No match':'No UIDs added yet'}</div>`;
+    // Also clear dash uid table
+    const dt = document.getElementById('dash-uid-tbody');
+    if (dt) dt.innerHTML = `<tr><td colspan="7"><div class="empty" style="padding:30px"><div class="big">👥</div>No UIDs added yet</div></td></tr>`;
     return;
   }
   el.innerHTML = uids.map(u => {
@@ -874,7 +887,7 @@ function renderUIDs() {
       <div class="uid-card-header">
         <div>
           <div class="uid-name">${u.nick}</div>
-          <div class="uid-sub">UID: ${u.uid} · ${SERVERS[u.server]||u.server} · Added: ${u.addedAt||'—'}</div>
+          <div class="uid-sub">UID: ${u.uid} · ${SERVERS[u.server]||u.server} · Added: ${(u.addedAt||'').substring(0,10)||'—'}</div>
         </div>
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
           ${hasSched?`<span class="sched-tag">⏰ ${sc.time} IST</span>`:'<span style="font-size:10px;color:var(--muted)">No schedule</span>'}
@@ -894,7 +907,6 @@ function renderUIDs() {
     </div>`;
   }).join('');
 
-  // Dashboard UID table
   const dashTbody = document.getElementById('dash-uid-tbody');
   if (dashTbody) {
     dashTbody.innerHTML = appData.uids.map(u => {
@@ -909,7 +921,7 @@ function renderUIDs() {
         <td>${sc.enabled?`<span class="badge b-auto">⏰ ${sc.time} IST</span>`:'<span class="badge b-fail">OFF</span>'}</td>
         <td><button class="btn bc" style="padding:6px 12px;font-size:10px" onclick="openSendModal('${u.uid}','${u.server}','${u.nick}')">❤️ Like</button></td>
       </tr>`;
-    }).join('') || `<tr><td colspan="7"><div class="empty" style="padding:30px"><div class="big">👥</div>No UIDs added yet</div></td></tr>`;
+    }).join('');
   }
 }
 
@@ -919,9 +931,7 @@ function renderSchedules() {
     grid.innerHTML = `<div class="empty" style="grid-column:1/-1;padding:60px"><div class="big">⏰</div>Add UIDs first</div>`;
     return;
   }
-  // Clear old countdown intervals
   Object.keys(cdIntervals).forEach(k => { clearInterval(cdIntervals[k]); delete cdIntervals[k]; });
-
   grid.innerHTML = appData.uids.map(u => {
     const sc = appData.schedules[u.id]||{};
     const enabled = !!sc.enabled;
@@ -939,7 +949,7 @@ function renderSchedules() {
       </div>
       <div class="sched-time-big">${sc.time||'--:--'}</div>
       <div class="sched-cd" style="margin-bottom:10px">IST · ${sc.server?SERVERS[sc.server]:SERVERS[u.server]||u.server}</div>
-      ${enabled?`<div id="cd-${u.id}" class="cd-small">--:--:--</div><div style="font-size:9px;color:var(--muted);margin-top:2px" id="cd-next-${u.id}">Next run...</div>`:'<div style="font-size:11px;color:var(--muted)">Schedule disabled</div>'}
+      ${enabled?`<div id="cd-${u.id}" class="cd-small">--:--:--</div><div style="font-size:9px;color:var(--muted);margin-top:2px" id="cd-next-${u.id}">Calculating...</div>`:'<div style="font-size:11px;color:var(--muted)">Schedule disabled</div>'}
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;font-size:10px;text-align:center">
         <div style="background:var(--surface2);border-radius:8px;padding:6px"><div style="color:var(--muted)">Total Likes</div><div style="color:var(--success);font-weight:700">${stats.total}</div></div>
         <div style="background:var(--surface2);border-radius:8px;padding:6px"><div style="color:var(--muted)">Auto Runs</div><div style="color:var(--accent3);font-weight:700">${stats.auto}</div></div>
@@ -948,7 +958,6 @@ function renderSchedules() {
     </div>`;
   }).join('');
 
-  // Start countdowns for enabled schedules
   appData.uids.forEach(u => {
     const sc = appData.schedules[u.id];
     if (sc && sc.enabled && sc.time) startCountdownForUID(u.id, sc.time);
@@ -971,19 +980,10 @@ function renderDashSchedules() {
       </div>
       <div style="text-align:right">
         <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:var(--accent3)">${sc.time} IST</div>
-        <div class="badge b-auto" style="font-size:9px">ACTIVE</div>
+        <div class="badge b-auto" style="font-size:9px">SERVER ACTIVE</div>
       </div>
     </div>`;
   }).join('');
-}
-
-async function toggleSchedUID(id, enabled) {
-  if (!appData.schedules[id]) appData.schedules[id] = { time:'06:00' };
-  appData.schedules[id].enabled = enabled;
-  saveLocal();
-  await saveToServer();
-  renderAll();
-  toast(enabled?'⏰ Schedule enabled!':'⏸ Schedule disabled','ok');
 }
 
 function startCountdownForUID(uid_id, time) {
@@ -995,27 +995,27 @@ function startCountdownForUID(uid_id, time) {
     const [h,m] = (time||'06:00').split(':').map(Number);
     const nowUTC = Date.now();
     const IST_OFFSET = 5.5*60*60*1000;
+    let tH = h, tM = m;
+    // Convert IST time to UTC
+    let utcM = tM - 30; let utcH = tH - 5;
+    if (utcM < 0) { utcM += 60; utcH--; }
+    if (utcH < 0) { utcH += 24; }
     const d = new Date(nowUTC);
-    let tH = h-5, tM = m-30, dayOff = 0;
-    if (tM<0){tM+=60;tH--;}
-    if (tH<0){tH+=24;dayOff=-1;}
-    let target = new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()+dayOff,tH,tM,0,0)).getTime();
-    if (target<=nowUTC) target+=86400000;
-    const diff = target-nowUTC;
+    let target = new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate(),utcH,utcM,0,0)).getTime();
+    if (target <= nowUTC) target += 86400000;
+    const diff = target - nowUTC;
     const hh=String(Math.floor(diff/3600000)).padStart(2,'0');
-    const mm=String(Math.floor((diff%3600000)/60000)).padStart(2,'0');
+    const mm2=String(Math.floor((diff%3600000)/60000)).padStart(2,'0');
     const ss=String(Math.floor((diff%60000)/1000)).padStart(2,'0');
-    if (cdEl) cdEl.textContent = `${hh}:${mm}:${ss}`;
+    if (cdEl) cdEl.textContent = `${hh}:${mm2}:${ss}`;
     if (nextEl) {
-      const next = new Date(target+IST_OFFSET);
+      const next = new Date(target + IST_OFFSET);
       nextEl.textContent = `Next: ${next.getUTCFullYear()}-${pad(next.getUTCMonth()+1)}-${pad(next.getUTCDate())} ${pad(next.getUTCHours())}:${pad(next.getUTCMinutes())} IST`;
     }
   }
   tick();
   cdIntervals[uid_id] = setInterval(tick, 1000);
 }
-
-const pad = n => String(n).padStart(2,'0');
 
 function renderQuickSelect() {
   const sel = document.getElementById('q-uid-select');
@@ -1027,18 +1027,11 @@ function renderQuickSelect() {
 
   const histSel = document.getElementById('f-uid-filter');
   if (histSel) {
+    const curH = histSel.value;
     histSel.innerHTML = '<option value="">All UIDs</option>' +
       appData.uids.map(u=>`<option value="${u.uid}">${u.nick} (${u.uid})</option>`).join('');
+    histSel.value = curH;
   }
-}
-
-function renderHistoryUIDFilter() {
-  const sel = document.getElementById('f-uid-filter');
-  if (!sel) return;
-  const cur = sel.value;
-  sel.innerHTML = '<option value="">All UIDs</option>' +
-    appData.uids.map(u=>`<option value="${u.uid}">${u.nick} (${u.uid})</option>`).join('');
-  sel.value = cur;
 }
 
 function renderHistory() {
@@ -1072,8 +1065,6 @@ function renderHistory() {
 
 function renderReports() {
   const h = appData.history||[];
-
-  // Summary
   const total = h.reduce((a,e)=>a+(e.given||0),0);
   const ok = h.filter(e=>e.status==='SUCCESS').length;
   const auto = h.filter(e=>e.type==='AUTO').length;
@@ -1081,34 +1072,35 @@ function renderReports() {
   document.getElementById('rp-rate').textContent = h.length? (ok/h.length*100).toFixed(1)+'%':'—';
   document.getElementById('rp-auto').textContent = auto.toLocaleString();
 
-  // Best day
   const dm={};
   h.forEach(e=>{ dm[e.date]=(dm[e.date]||0)+(e.given||0); });
   const bestDay = Object.entries(dm).sort((a,b)=>b[1]-a[1])[0];
   document.getElementById('rp-bestday').textContent = bestDay?bestDay[1]:'—';
   document.getElementById('rp-bestday-date').textContent = bestDay?bestDay[0]:'—';
 
-  if (!h.length) { ['ch-daily','ch-uid','ch-server','ch-type','ch-success','ch-hour','daily-tbody','uid-report-tbody'].forEach(id=>{ const el=document.getElementById(id); if(el) el.innerHTML=`<div class="empty" style="padding:20px"><div class="big">📊</div>No data yet</div>`; }); return; }
+  if (!h.length) {
+    ['ch-daily','ch-uid','ch-server','ch-type','ch-success','ch-hour','daily-tbody','uid-report-tbody'].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el) el.innerHTML=`<div class="empty" style="padding:20px"><div class="big">📊</div>No data yet</div>`;
+    });
+    return;
+  }
 
-  // Daily (14 days)
   const days = Object.entries(dm).sort((a,b)=>a[0]>b[0]?-1:1).slice(0,14).reverse();
   const maxD = Math.max(...days.map(d=>d[1]),1);
   document.getElementById('ch-daily').innerHTML = days.map(([d,v])=>
     `<div class="bar-row"><div class="bar-label">${d.substring(5)}</div><div class="bar-track"><div class="bar-fill" style="width:${(v/maxD*100).toFixed(1)}%"></div></div><div class="bar-val">${v}</div></div>`
-  ).join('') || `<div class="empty" style="padding:20px">No data</div>`;
+  ).join('') || `<div class="empty">No data</div>`;
 
-  // Per UID
   const um={};
   h.forEach(e=>{ um[e.uid]=(um[e.uid]||0)+(e.given||0); });
   const uidEntries = Object.entries(um).sort((a,b)=>b[1]-a[1]).slice(0,10);
   const maxU = Math.max(...uidEntries.map(d=>d[1]),1);
   document.getElementById('ch-uid').innerHTML = uidEntries.map(([uid,v])=>{
     const u = appData.uids.find(u=>String(u.uid)===String(uid));
-    const label = u?u.nick:uid.substring(0,8)+'...';
-    return `<div class="bar-row"><div class="bar-label">${label}</div><div class="bar-track"><div class="bar-fill" style="width:${(v/maxU*100).toFixed(1)}%;background:linear-gradient(90deg,var(--gold),var(--warn))"></div></div><div class="bar-val">${v}</div></div>`;
+    return `<div class="bar-row"><div class="bar-label">${u?u.nick:uid.substring(0,8)+'...'}</div><div class="bar-track"><div class="bar-fill" style="width:${(v/maxU*100).toFixed(1)}%;background:linear-gradient(90deg,var(--gold),var(--warn))"></div></div><div class="bar-val">${v}</div></div>`;
   }).join('') || `<div class="empty">No data</div>`;
 
-  // Server
   const sm={};
   h.forEach(e=>{ sm[e.server]=(sm[e.server]||0)+(e.given||0); });
   const srvs=Object.entries(sm).sort((a,b)=>b[1]-a[1]);
@@ -1117,40 +1109,33 @@ function renderReports() {
     `<div class="bar-row"><div class="bar-label">${s}</div><div class="bar-track"><div class="bar-fill" style="width:${(v/maxS*100).toFixed(1)}%;background:linear-gradient(90deg,var(--accent3),var(--accent2))"></div></div><div class="bar-val">${v}</div></div>`
   ).join('');
 
-  // Type
   const man=h.filter(e=>e.type==='MANUAL').length, tot=auto+man||1;
   document.getElementById('ch-type').innerHTML = `
     <div class="bar-row"><div class="bar-label">🤖 Auto</div><div class="bar-track"><div class="bar-fill" style="width:${(auto/tot*100).toFixed(1)}%;background:linear-gradient(90deg,var(--accent3),var(--accent2))"></div></div><div class="bar-val">${auto}</div></div>
     <div class="bar-row"><div class="bar-label">👆 Manual</div><div class="bar-track"><div class="bar-fill" style="width:${(man/tot*100).toFixed(1)}%"></div></div><div class="bar-val">${man}</div></div>`;
 
-  // Success
   const fail=h.length-ok, tot2=h.length||1;
   document.getElementById('ch-success').innerHTML = `
     <div class="bar-row"><div class="bar-label">✅ OK</div><div class="bar-track"><div class="bar-fill" style="width:${(ok/tot2*100).toFixed(1)}%;background:linear-gradient(90deg,var(--success),#00bfa5)"></div></div><div class="bar-val">${ok}</div></div>
     <div class="bar-row"><div class="bar-label">❌ Fail</div><div class="bar-track"><div class="bar-fill" style="width:${(fail/tot2*100).toFixed(1)}%;background:linear-gradient(90deg,var(--danger),#ff6d00)"></div></div><div class="bar-val">${fail}</div></div>
     <div style="margin-top:14px;font-family:'Bebas Neue';font-size:30px;color:var(--success);letter-spacing:2px">${(ok/tot2*100).toFixed(1)}% SUCCESS</div>`;
 
-  // Hour distribution
   const hm={};
-  h.forEach(e=>{
-    const hr = e.time?parseInt(e.time.substring(11,13)):0;
-    hm[hr]=(hm[hr]||0)+(e.given||0);
-  });
+  h.forEach(e=>{ const hr=e.time?parseInt(e.time.substring(11,13)):0; hm[hr]=(hm[hr]||0)+(e.given||0); });
   const hrs=Object.entries(hm).sort((a,b)=>Number(a[0])-Number(b[0]));
   const maxH=Math.max(...hrs.map(d=>d[1]),1);
   document.getElementById('ch-hour').innerHTML = hrs.map(([hr,v])=>
     `<div class="bar-row"><div class="bar-label">${pad(hr)}:00</div><div class="bar-track"><div class="bar-fill" style="width:${(v/maxH*100).toFixed(1)}%;background:linear-gradient(90deg,var(--accent),var(--gold))"></div></div><div class="bar-val">${v}</div></div>`
-  ).join('') || `<div class="empty" style="padding:20px">No data</div>`;
+  ).join('') || `<div class="empty">No data</div>`;
 
-  // Daily summary table
   const ds={};
   h.forEach(e=>{
-    if (!ds[e.date]) ds[e.date]={given:0,sessions:0,auto:0,uids:new Set(),servers:new Set(),ok:0};
-    ds[e.date].given+=(e.given||0); ds[e.date].sessions++; ds[e.date].ok+=(e.status==='SUCCESS'?1:0);
+    if (!ds[e.date]) ds[e.date]={given:0,sessions:0,auto:0,uids:new Set(),ok:0};
+    ds[e.date].given+=(e.given||0); ds[e.date].sessions++;
     if(e.type==='AUTO') ds[e.date].auto++;
-    ds[e.date].uids.add(e.uid); ds[e.date].servers.add(e.server);
+    ds[e.date].uids.add(e.uid);
+    if(e.status==='SUCCESS') ds[e.date].ok++;
   });
-  // Find best UID per day
   const dayUIDMax={};
   h.forEach(e=>{
     if(!dayUIDMax[e.date]) dayUIDMax[e.date]={};
@@ -1158,7 +1143,7 @@ function renderReports() {
   });
   document.getElementById('daily-tbody').innerHTML = Object.entries(ds).sort((a,b)=>b[0]>a[0]?1:-1).map(([date,d])=>{
     const bestUIDEntry = Object.entries(dayUIDMax[date]||{}).sort((a,b)=>b[1]-a[1])[0];
-    const bestUID = bestUIDEntry ? (appData.uids.find(u=>String(u.uid)===String(bestUIDEntry[0]))?.nick || bestUIDEntry[0].substring(0,8)+'...') : '—';
+    const bestUID = bestUIDEntry ? (appData.uids.find(u=>String(u.uid)===String(bestUIDEntry[0]))?.nick||bestUIDEntry[0].substring(0,8)+'...') : '—';
     return `<tr>
       <td style="font-weight:700;color:var(--accent3)">${date}</td>
       <td style="color:var(--gold);font-weight:700">+${d.given}</td>
@@ -1171,7 +1156,6 @@ function renderReports() {
     </tr>`;
   }).join('') || `<tr><td colspan="8"><div class="empty">No data</div></td></tr>`;
 
-  // Per UID report
   const uidReport={};
   h.forEach(e=>{
     if(!uidReport[e.uid]) uidReport[e.uid]={given:0,sessions:0,auto:0,servers:new Set(),ok:0,lastRun:null};
@@ -1196,16 +1180,6 @@ function renderReports() {
   }).join('') || `<tr><td colspan="8"><div class="empty">No data</div></td></tr>`;
 }
 
-// ── SERVER SAVE ───────────────────────────────────────────────
-async function saveToServer() {
-  try {
-    await fetch('/api/uids', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ uids: appData.uids, schedules: appData.schedules })
-    });
-  } catch(e) { /* server offline, local only */ }
-}
-
 // ── HISTORY ACTIONS ───────────────────────────────────────────
 async function clearHistory() {
   if (!confirm('Clear all history?')) return;
@@ -1216,10 +1190,12 @@ async function clearHistory() {
 }
 
 async function resetAll() {
-  if (!confirm('RESET ALL DATA?')) return;
+  if (!confirm('RESET ALL DATA? This cannot be undone.')) return;
   try { await fetch('/api/history',{method:'DELETE'}); } catch(e){}
   appData = { history:[], stats:{}, uids:[], schedules:{} };
-  saveLocal(); renderAll();
+  saveLocal();
+  await saveToServer();
+  renderAll();
   toast('♻️ Reset done','warn');
 }
 
@@ -1229,16 +1205,12 @@ function exportCSV() {
   dl('freelike_history.csv',[cols.join(','),...rows].join('\n'),'text/csv');
   toast('⬇️ CSV exported!','ok');
 }
-
 function exportJSON() {
   dl('freelike_data.json',JSON.stringify(appData,null,2),'application/json');
   toast('⬇️ JSON exported!','ok');
 }
-
 function dl(name,content,type) {
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([content],{type}));
-  a.download=name; a.click();
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([content],{type})); a.download=name; a.click();
 }
 
 // ── TABS ──────────────────────────────────────────────────────
@@ -1254,15 +1226,13 @@ function switchTab(name) {
 
 // ── CLOCK ─────────────────────────────────────────────────────
 function nowIST() {
-  const n=new Date();
-  const off=5*60+30;
+  const n=new Date(), off=5*60+30;
   const utcMin=n.getUTCHours()*60+n.getUTCMinutes()+off;
-  const h=Math.floor(utcMin/60)%24,m=utcMin%60,s=n.getUTCSeconds();
-  let d=n.getUTCDate(),mo=n.getUTCMonth()+1,y=n.getUTCFullYear();
+  const h=Math.floor(utcMin/60)%24, m=utcMin%60, s=n.getUTCSeconds();
+  let d=n.getUTCDate(), mo=n.getUTCMonth()+1, y=n.getUTCFullYear();
   if(n.getUTCHours()*60+n.getUTCMinutes()+off>=1440) d+=1;
   return `${y}-${pad(mo)}-${pad(d)} ${pad(h)}:${pad(m)}:${pad(s)}`;
 }
-
 function startClock() {
   function tick() { document.getElementById('clock').textContent = nowIST() + ' IST'; }
   tick(); setInterval(tick,1000);
@@ -1274,7 +1244,6 @@ function toast(msg,type) {
   el.textContent=msg; el.className='t-'+type; el.style.display='block';
   clearTimeout(el._t); el._t=setTimeout(()=>el.style.display='none',3500);
 }
-
 function burst() {
   ['❤️','🔥','💖','✨','💕','🎮'].forEach((e,i)=>{
     setTimeout(()=>{
@@ -1285,27 +1254,17 @@ function burst() {
   });
 }
 
-// ── QUEUE ENGINE (60s delay between UIDs) ─────────────────────
-const DELAY_SEC = 60; // 1 minute between each UID
+// ── MANUAL QUEUE ENGINE (browser-side, "Send All Now") ────────
+const DELAY_SEC = 60;
 let queueRunning = false;
 let queueCancelled = false;
 let queueDelayTimer = null;
-let schedCheckInterval = null;
-// Track which schedule times have already fired today (key = uid_id + date)
-const firedToday = {};
 
-// Called by "Send All UIDs Now" button
 async function runAllNow() {
   const targets = appData.uids.filter(u => appData.schedules[u.id]?.enabled);
   if (!targets.length) { toast('⚠️ No UIDs with enabled schedules!', 'warn'); return; }
   if (queueRunning) { toast('⚠️ Queue already running!', 'warn'); return; }
-  startQueue(targets, 'MANUAL');
-}
-
-// Called automatically by the schedule checker
-async function runScheduledQueue(targets) {
-  if (queueRunning) return; // don't double-run
-  startQueue(targets, 'AUTO');
+  startQueue(targets);
 }
 
 function cancelQueue() {
@@ -1315,60 +1274,44 @@ function cancelQueue() {
   document.getElementById('queue-panel').classList.remove('show');
   document.getElementById('delay-banner').classList.remove('show');
   const btn = document.getElementById('btn-send-all');
-  if (btn) { btn.disabled = false; btn.innerHTML = '🚀 Send All UIDs Now (60s delay each)'; }
+  if (btn) { btn.disabled = false; btn.innerHTML = '🚀 Send All Enabled UIDs Now'; }
   toast('✕ Queue cancelled', 'warn');
 }
 
-async function startQueue(targets, type) {
+async function startQueue(targets) {
   queueRunning = true;
   queueCancelled = false;
   const panel = document.getElementById('queue-panel');
   const grid  = document.getElementById('queue-grid');
   const btn   = document.getElementById('btn-send-all');
-  const titleEl = document.getElementById('queue-title-txt');
-
   panel.classList.add('show');
   if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Queue Running...'; }
-  titleEl.textContent = type === 'AUTO' ? '⏰ Auto-Schedule Queue Running...' : '🚀 Manual Queue Running...';
-
-  // Build queue rows
-  const rows = targets.map((u, i) => ({
-    u, idx: i,
-    state: 'waiting', // waiting | running | delay | done-ok | done-fail
-    given: 0, status: ''
-  }));
+  document.getElementById('queue-title-txt').textContent = '🚀 Manual Queue Running...';
+  const rows = targets.map((u,i) => ({ u, idx:i, state:'waiting', given:0, status:'' }));
 
   function renderQueueRows() {
-    const total = rows.length;
-    const done  = rows.filter(r => r.state === 'done-ok' || r.state === 'done-fail').length;
-    const pct   = total ? (done / total * 100).toFixed(0) : 0;
-    document.getElementById('queue-progress-fill').style.width = pct + '%';
-    document.getElementById('queue-progress-txt').textContent  = `${done} / ${total} done`;
-    const remaining = total - done;
-    const etaSec = remaining * (DELAY_SEC + 5); // rough: 5s per API call
-    document.getElementById('queue-eta').textContent = done < total
-      ? 'ETA: ~' + (etaSec >= 60 ? Math.ceil(etaSec/60) + ' min' : etaSec + 's')
+    const done = rows.filter(r=>r.state==='done-ok'||r.state==='done-fail').length;
+    const pct = rows.length ? (done/rows.length*100).toFixed(0) : 0;
+    document.getElementById('queue-progress-fill').style.width = pct+'%';
+    document.getElementById('queue-progress-txt').textContent = `${done} / ${rows.length} done`;
+    const remaining = rows.length - done;
+    document.getElementById('queue-eta').textContent = done < rows.length
+      ? 'ETA: ~' + (remaining*(DELAY_SEC+5)>=60 ? Math.ceil(remaining*(DELAY_SEC+5)/60)+'min' : (remaining*(DELAY_SEC+5))+'s')
       : 'Done!';
-
-    const icons = { waiting:'⬜', running:'🔵', delay:'🟡', 'done-ok':'✅', 'done-fail':'❌' };
-    const statusLabels = { waiting:'Waiting...', running:'Sending like...', delay:'Waiting 60s...', 'done-ok':'Success', 'done-fail':'Failed' };
-
+    const icons = {waiting:'⬜',running:'🔵',delay:'🟡','done-ok':'✅','done-fail':'❌'};
+    const labels = {waiting:'Waiting...',running:'Sending...',delay:'Waiting 60s...','done-ok':'Success','done-fail':'Failed'};
     grid.innerHTML = rows.map(r => {
-      const sc = appData.schedules[r.u.id] || {};
-      const srv = sc.server || r.u.server;
-      const delayCol = r.state === 'delay'
-        ? `<span id="q-cd-${r.idx}" style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--warn);letter-spacing:2px">60</span><span style="font-size:9px;color:var(--muted)"> s</span>`
-        : (r.state === 'done-ok'
-            ? `<span style="color:var(--success);font-weight:700">+${r.given}</span>`
-            : (r.state === 'done-fail' ? `<span style="color:var(--danger)">Error</span>` : '—'));
+      const sc = appData.schedules[r.u.id]||{};
+      const srv = sc.server||r.u.server;
+      const rightCol = r.state==='delay'
+        ? `<span id="q-cd-${r.idx}" style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--warn);letter-spacing:2px">60</span><span style="font-size:9px;color:var(--muted)">s</span>`
+        : r.state==='done-ok' ? `<span style="color:var(--success);font-weight:700">+${r.given}</span>`
+        : r.state==='done-fail' ? `<span style="color:var(--danger)">Error</span>` : '—';
       return `<div class="queue-row q-${r.state}">
         <div style="font-size:16px;text-align:center">${icons[r.state]||'⬜'}</div>
-        <div>
-          <div class="q-nick">${r.u.nick}</div>
-          <div class="q-uid-txt">${r.u.uid} · ${SERVERS[srv]||srv}</div>
-        </div>
-        <div style="font-size:10px;color:var(--muted)">${statusLabels[r.state]||'—'}</div>
-        <div>${delayCol}</div>
+        <div><div class="q-nick">${r.u.nick}</div><div class="q-uid-txt">${r.u.uid} · ${SERVERS[srv]||srv}</div></div>
+        <div style="font-size:10px;color:var(--muted)">${labels[r.state]||'—'}</div>
+        <div>${rightCol}</div>
         <div style="font-size:10px;color:var(--muted);text-align:right">${r.status}</div>
       </div>`;
     }).join('');
@@ -1378,117 +1321,72 @@ async function startQueue(targets, type) {
 
   for (let i = 0; i < rows.length; i++) {
     if (queueCancelled) break;
-
-    // Mark running
     rows[i].state = 'running';
     renderQueueRows();
     toast(`❤️ Sending like to ${rows[i].u.nick}... (${i+1}/${rows.length})`, 'ok');
 
-    // Send the like
-    const u  = rows[i].u;
-    const sc = appData.schedules[u.id] || {};
-    const server = sc.server || u.server;
+    const u = rows[i].u;
+    const sc = appData.schedules[u.id]||{};
+    const server = sc.server||u.server;
     try {
       const res = await fetch('/api/like', {
-        method: 'POST', headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ uid: u.uid, server, type })
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ uid:u.uid, server })
       });
       const result = await res.json();
-      if (!result.ok) throw new Error(result.error || 'Failed');
+      if (!result.ok) throw new Error(result.error||'Failed');
       const d = result.apiData;
-      rows[i].given  = d.LikesGivenByAPI ?? 0;
-      rows[i].status = d.status === 1 ? `+${rows[i].given} given` : 'API error';
-      rows[i].state  = d.status === 1 ? 'done-ok' : 'done-fail';
-      if (d.PlayerNickname) { u.nick = d.PlayerNickname; saveLocal(); }
+      rows[i].given  = d.LikesGivenByAPI??0;
+      rows[i].status = d.status===1 ? `+${rows[i].given} given` : 'API error';
+      rows[i].state  = d.status===1 ? 'done-ok' : 'done-fail';
+      if (d.PlayerNickname) { u.nick=d.PlayerNickname; saveLocal(); }
     } catch(e) {
       rows[i].state  = 'done-fail';
-      rows[i].status = e.message.substring(0, 20);
+      rows[i].status = e.message.substring(0,20);
     }
 
     renderQueueRows();
     burst();
     await loadAll().catch(()=>{});
 
-    // 60-second delay before next UID (skip after last one)
-    if (i < rows.length - 1 && !queueCancelled) {
+    if (i < rows.length-1 && !queueCancelled) {
       rows[i+1].state = 'delay';
       renderQueueRows();
       const banner = document.getElementById('delay-banner');
       banner.classList.add('show');
-      document.getElementById('delay-lbl-txt').textContent =
-        `Waiting ${DELAY_SEC}s before: ${rows[i+1].u.nick} (${i+2}/${rows.length})`;
-
+      document.getElementById('delay-lbl-txt').textContent = `Waiting ${DELAY_SEC}s before: ${rows[i+1].u.nick} (${i+2}/${rows.length})`;
       await new Promise(resolve => {
-        let remaining = DELAY_SEC;
+        let rem = DELAY_SEC;
         function tick() {
           if (queueCancelled) { resolve(); return; }
           const cdBig = document.getElementById('delay-cd-big');
-          const cdRow = document.getElementById('q-cd-' + (i+1));
-          if (cdBig) cdBig.textContent = remaining;
-          if (cdRow) cdRow.textContent = remaining;
-          if (remaining <= 0) { resolve(); return; }
-          remaining--;
+          const cdRow = document.getElementById('q-cd-'+(i+1));
+          if (cdBig) cdBig.textContent = rem;
+          if (cdRow) cdRow.textContent = rem;
+          if (rem <= 0) { resolve(); return; }
+          rem--;
           queueDelayTimer = setTimeout(tick, 1000);
         }
         tick();
       });
-
       banner.classList.remove('show');
       rows[i+1].state = 'waiting';
     }
   }
 
-  // Queue finished
   queueRunning = false;
-  const doneOk   = rows.filter(r => r.state === 'done-ok').length;
-  const doneFail  = rows.filter(r => r.state === 'done-fail').length;
-  document.getElementById('queue-title-txt').textContent =
-    `✅ Queue Done — ${doneOk} success, ${doneFail} failed`;
+  const doneOk = rows.filter(r=>r.state==='done-ok').length;
+  const doneFail = rows.filter(r=>r.state==='done-fail').length;
+  document.getElementById('queue-title-txt').textContent = `✅ Done — ${doneOk} success, ${doneFail} failed`;
   document.getElementById('queue-spinner').style.display = 'none';
   document.getElementById('delay-banner').classList.remove('show');
   document.getElementById('queue-progress-fill').style.width = '100%';
-  if (btn) { btn.disabled = false; btn.innerHTML = '🚀 Send All UIDs Now (60s delay each)'; }
+  if (btn) { btn.disabled=false; btn.innerHTML='🚀 Send All Enabled UIDs Now'; }
   toast(`✅ Queue done! ${doneOk}/${rows.length} succeeded.`, 'ok');
   renderQueueRows();
 }
 
-// ── AUTO-SCHEDULE CHECKER (runs every 30s) ─────────────────────
-// Checks if any UID's schedule time has arrived (within a 1-min window)
-function startScheduleChecker() {
-  function check() {
-    if (queueRunning) return; // don't interrupt an active queue
-    const IST_OFFSET = 5.5 * 60 * 60 * 1000;
-    const nowIST_ms  = Date.now() + IST_OFFSET;
-    const nowIST_d   = new Date(nowIST_ms);
-    const curH = nowIST_d.getUTCHours();
-    const curM = nowIST_d.getUTCMinutes();
-    const todayKey = `${nowIST_d.getUTCFullYear()}-${pad(nowIST_d.getUTCMonth()+1)}-${pad(nowIST_d.getUTCDate())}`;
-
-    const due = appData.uids.filter(u => {
-      const sc = appData.schedules[u.id];
-      if (!sc || !sc.enabled || !sc.time) return false;
-      const [h, m] = sc.time.split(':').map(Number);
-      const fireKey = u.id + '_' + todayKey;
-      if (firedToday[fireKey]) return false; // already ran today
-      // Fire if we are within the current minute of the scheduled time
-      return curH === h && curM === m;
-    });
-
-    if (due.length > 0) {
-      // Mark all as fired for today
-      due.forEach(u => { firedToday[u.id + '_' + todayKey] = true; });
-      toast(`⏰ Auto-schedule triggered for ${due.length} UID(s)!`, 'ok');
-      runScheduledQueue(due);
-    }
-  }
-  if (schedCheckInterval) clearInterval(schedCheckInterval);
-  schedCheckInterval = setInterval(check, 30000); // check every 30 seconds
-  check(); // run immediately on load too
-}
-
-
 init();
-startScheduleChecker();
 </script>
 </body>
 </html>
