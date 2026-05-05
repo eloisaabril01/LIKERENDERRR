@@ -14,12 +14,21 @@ app.use(express.static(path.join(__dirname, 'public')));
 // ─── DATA ────────────────────────────────────────────────────
 function loadData() {
   try {
-    if (fs.existsSync(DATA_FILE)) return JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+    if (fs.existsSync(DATA_FILE)) {
+      const d = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+      // Ensure new fields always present
+      if (!d.uids) d.uids = [];
+      if (!d.schedules) d.schedules = {};
+      if (!d.stats) d.stats = { total: 0, today: 0, todayDate: '', sessions: 0, autoRuns: 0, lastRun: '' };
+      if (!d.history) d.history = [];
+      return d;
+    }
   } catch (e) { console.error('loadData:', e.message); }
   return {
     history: [],
     stats: { total: 0, today: 0, todayDate: '', sessions: 0, autoRuns: 0, lastRun: '' },
-    schedule: { enabled: false, time: '06:00', uid: '2908376165', server: 'ind' }
+    uids: [],
+    schedules: {}
   };
 }
 
@@ -36,6 +45,8 @@ function fmtIST() {
   return getIST().toISOString().replace('T', ' ').substring(0, 19);
 }
 
+function pad(n) { return String(n).padStart(2, '0'); }
+
 // ─── SELF PING (keeps Render free tier awake) ────────────────
 function startSelfPing() {
   const url = process.env.RENDER_EXTERNAL_URL;
@@ -45,7 +56,7 @@ function startSelfPing() {
       await fetch(`${url}/api/status`);
       console.log(`🏓 Self-ping OK [${fmtIST()} IST]`);
     } catch (e) { console.error('Self-ping failed:', e.message); }
-  }, 10 * 60 * 1000); // every 10 minutes
+  }, 10 * 60 * 1000);
   console.log(`🏓 Self-ping started → ${url}/api/status`);
 }
 
@@ -97,52 +108,130 @@ async function sendLike(uid, server, isAuto = false) {
   }
 }
 
-// ─── CRON (every minute, checks IST time) ────────────────────
+// ─── SLEEP HELPER ─────────────────────────────────────────────
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ─── MULTI-UID CRON (every minute, checks IST time) ──────────
+// Tracks which uid+date combos already fired today
+const firedToday = {}; // key: uid_id + '_' + dateStr
+let cronQueueRunning = false;
+
 let cronJob = null;
+
+async function runCronQueue(dueuids) {
+  if (cronQueueRunning) {
+    console.log('⚠️ Cron queue already running, skipping');
+    return;
+  }
+  cronQueueRunning = true;
+  console.log(`🤖 CRON QUEUE START: ${dueuids.length} UIDs to process`);
+
+  for (let i = 0; i < dueuids.length; i++) {
+    const { uid, server, nick, uid_id } = dueuids[i];
+    console.log(`🤖 [${i+1}/${dueuids.length}] Sending AUTO like → ${nick} (${uid}) on ${server}`);
+    await sendLike(uid, server, true);
+
+    if (i < dueuids.length - 1) {
+      console.log(`⏳ Waiting 60s before next UID...`);
+      await sleep(60000); // 60 second delay between UIDs
+    }
+  }
+
+  console.log(`✅ CRON QUEUE DONE: ${dueuids.length} UIDs processed`);
+  cronQueueRunning = false;
+}
 
 function startCron() {
   if (cronJob) { cronJob.destroy(); cronJob = null; }
+
   cronJob = cron.schedule('* * * * *', () => {
     const data = loadData();
-    if (!data.schedule.enabled || !data.schedule.uid) return;
+    if (!data.uids || !data.uids.length) return;
+
     const ist = getIST();
-    const hh = String(ist.getHours()).padStart(2, '0');
-    const mm = String(ist.getMinutes()).padStart(2, '0');
-    if (`${hh}:${mm}` === (data.schedule.time || '06:00')) {
-      console.log(`⏰ CRON FIRED at ${hh}:${mm} IST`);
-      sendLike(data.schedule.uid, data.schedule.server, true);
+    const hh = pad(ist.getUTCHours());
+    const mm = pad(ist.getUTCMinutes());
+    const currentTime = `${hh}:${mm}`;
+    const dateStr = ist.toISOString().substring(0, 10);
+
+    // Find all UIDs whose schedule time matches right now and haven't fired today
+    const due = [];
+    for (const u of data.uids) {
+      const sc = data.schedules[u.id];
+      if (!sc || !sc.enabled || !sc.time) continue;
+
+      const fireKey = u.id + '_' + dateStr;
+      if (firedToday[fireKey]) continue; // already ran today
+
+      if (sc.time === currentTime) {
+        firedToday[fireKey] = true;
+        const server = sc.server || u.server || 'ind';
+        due.push({ uid: u.uid, server, nick: u.nick || u.uid, uid_id: u.id });
+        console.log(`⏰ CRON MATCH: ${u.nick} (${u.uid}) at ${currentTime} IST → server:${server}`);
+      }
+    }
+
+    if (due.length > 0) {
+      runCronQueue(due); // fire async, don't await in cron tick
     }
   });
-  console.log('✅ Cron scheduler running');
+
+  console.log('✅ Multi-UID cron scheduler running');
 }
 
 // ─── ROUTES ──────────────────────────────────────────────────
+
+// Status
 app.get('/api/status', (req, res) => {
   const data = loadData();
+  const activeSchedules = Object.values(data.schedules || {}).filter(sc => sc && sc.enabled).length;
   res.json({
     uptime: Math.floor(process.uptime()),
     serverTime: fmtIST() + ' IST',
-    scheduleEnabled: data.schedule.enabled,
-    scheduleTime: data.schedule.time,
-    scheduleUID: data.schedule.uid,
+    scheduleEnabled: activeSchedules > 0,
+    activeSchedules,
+    totalUIDs: (data.uids || []).length,
     totalRecords: data.history.length,
-    totalLikes: data.stats.total || 0
+    totalLikes: data.stats.total || 0,
+    cronQueueRunning
   });
 });
 
+// Get all data
 app.get('/api/data', (req, res) => res.json(loadData()));
 
+// Save uids + schedules (called by frontend on every change)
+app.post('/api/uids', (req, res) => {
+  try {
+    const data = loadData();
+    if (req.body.uids !== undefined) data.uids = req.body.uids;
+    if (req.body.schedules !== undefined) data.schedules = req.body.schedules;
+    saveData(data);
+    startCron(); // restart cron so it picks up new schedules immediately
+    const activeSchedules = Object.values(data.schedules || {}).filter(sc => sc && sc.enabled).length;
+    console.log(`💾 UIDs saved: ${data.uids.length} UIDs, ${activeSchedules} active schedules`);
+    res.json({ ok: true, uids: data.uids.length, activeSchedules });
+  } catch (e) {
+    console.error('POST /api/uids error:', e.message);
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// Legacy /api/data POST (keep for compatibility)
 app.post('/api/data', (req, res) => {
   try {
     const current = loadData();
-    const updated = { ...current, ...req.body };
-    if (!req.body.history || req.body.history.length === 0) updated.history = current.history;
-    saveData(updated);
+    if (req.body.uids !== undefined) current.uids = req.body.uids;
+    if (req.body.schedules !== undefined) current.schedules = req.body.schedules;
+    if (req.body.stats !== undefined) current.stats = req.body.stats;
+    // Never overwrite history from client (server is source of truth for history)
+    saveData(current);
     startCron();
     res.json({ ok: true });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
+// Manual like
 app.post('/api/like', async (req, res) => {
   const { uid, server } = req.body;
   if (!uid || !server) return res.status(400).json({ error: 'Missing uid or server' });
@@ -150,28 +239,47 @@ app.post('/api/like', async (req, res) => {
   res.json(result);
 });
 
-app.get('/api/schedule', (req, res) => res.json(loadData().schedule));
-
-app.post('/api/schedule', (req, res) => {
-  const data = loadData();
-  data.schedule = { ...data.schedule, ...req.body };
-  saveData(data);
-  startCron();
-  res.json({ ok: true, schedule: data.schedule });
-});
-
+// Clear history
 app.delete('/api/history', (req, res) => {
   const data = loadData();
   data.history = [];
+  data.stats = { total: 0, today: 0, todayDate: '', sessions: 0, autoRuns: 0, lastRun: '' };
   saveData(data);
   res.json({ ok: true });
+});
+
+// Schedule per UID (convenience endpoint)
+app.post('/api/schedule/:uid_id', (req, res) => {
+  try {
+    const data = loadData();
+    data.schedules[req.params.uid_id] = { ...data.schedules[req.params.uid_id], ...req.body };
+    saveData(data);
+    startCron();
+    res.json({ ok: true });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// Debug: show current schedules
+app.get('/api/debug', (req, res) => {
+  const data = loadData();
+  const ist = getIST();
+  res.json({
+    serverTime: fmtIST() + ' IST',
+    cronQueueRunning,
+    firedToday,
+    uids: (data.uids || []).map(u => ({
+      id: u.id, uid: u.uid, nick: u.nick,
+      schedule: data.schedules[u.id] || null
+    }))
+  });
 });
 
 // ─── START ────────────────────────────────────────────────────
 app.listen(PORT, () => {
   console.log(`🚀 FreeLike Server on port ${PORT}`);
   const data = loadData();
-  console.log(`⏰ Schedule: ${data.schedule.enabled ? 'ON at ' + data.schedule.time + ' IST' : 'OFF'}`);
+  const activeSchedules = Object.values(data.schedules || {}).filter(sc => sc && sc.enabled).length;
+  console.log(`📋 Loaded: ${(data.uids||[]).length} UIDs, ${activeSchedules} active schedules`);
   startCron();
   startSelfPing();
 });
