@@ -1,292 +1,177 @@
-/**
- * FreeLike v3 — Server
- * ────────────────────────────────────────────────────────────────
- * • Serves the HTML dashboard
- * • Handles /api/like, /api/data, /api/status, /api/uids, /api/schedule, /api/history
- * • Built-in cron: checks schedules every 60s, runs UIDs one-by-one with 60s delay between each
- * • Works 24/7 — browser does NOT need to be open
- *
- * INSTALL & RUN:
- *   npm install express node-fetch
- *   node server.js
- *
- * Or with auto-restart (recommended):
- *   npm install -g pm2
- *   pm2 start server.js --name freelike
- *   pm2 save && pm2 startup
- */
+const express = require('express');
+const cron = require('node-cron');
+const fetch = require('node-fetch');
+const fs = require('fs');
+const path = require('path');
 
-const express  = require('express');
-const fs       = require('fs');
-const path     = require('path');
-
-// node-fetch v2 is CommonJS compatible
-let fetch;
-try { fetch = require('node-fetch'); }
-catch(e) { fetch = globalThis.fetch; } // Node 18+ has built-in fetch
-
-const app  = express();
+const app = express();
 const PORT = process.env.PORT || 3000;
-const DB   = path.join(__dirname, 'freelike_data.json');
+const DATA_FILE = path.join(__dirname, 'data.json');
 
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public'))); // serve HTML from same folder
+app.use(express.static(path.join(__dirname, 'public')));
 
-// ── DATABASE ──────────────────────────────────────────────────
-function loadDB() {
+// ─── DATA ────────────────────────────────────────────────────
+function loadData() {
   try {
-    if (fs.existsSync(DB)) return JSON.parse(fs.readFileSync(DB,'utf8'));
-  } catch(e) {}
-  return { history:[], stats:{}, uids:[], schedules:{} };
-}
-
-function saveDB(data) {
-  try { fs.writeFileSync(DB, JSON.stringify(data, null, 2)); }
-  catch(e) { console.error('DB save error:', e.message); }
-}
-
-function recalcStats(data) {
-  const h = data.history || [];
-  const IST_OFFSET = 5.5 * 60 * 60 * 1000;
-  const nowIST = new Date(Date.now() + IST_OFFSET);
-  const todayStr = nowIST.toISOString().substring(0,10);
-
-  data.stats = {
-    total   : h.reduce((a,e)=>a+(e.given||0), 0),
-    today   : h.filter(e=>e.date===todayStr).reduce((a,e)=>a+(e.given||0),0),
-    todayDate: todayStr,
-    sessions: h.length,
-    autoRuns: h.filter(e=>e.type==='AUTO').length,
-    lastRun : h.length ? h[0].time : null
+    if (fs.existsSync(DATA_FILE)) return JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+  } catch (e) { console.error('loadData:', e.message); }
+  return {
+    history: [],
+    stats: { total: 0, today: 0, todayDate: '', sessions: 0, autoRuns: 0, lastRun: '' },
+    schedule: { enabled: false, time: '06:00', uid: '2908376165', server: 'ind' }
   };
 }
 
-// ── HELPERS ───────────────────────────────────────────────────
-function nowIST() {
-  const IST_OFFSET = 5.5 * 60 * 60 * 1000;
-  const d = new Date(Date.now() + IST_OFFSET);
-  const pad = n => String(n).padStart(2,'0');
-  return `${d.getUTCFullYear()}-${pad(d.getUTCMonth()+1)}-${pad(d.getUTCDate())} ${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}:${pad(d.getUTCSeconds())}`;
+function saveData(data) {
+  try { fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2)); }
+  catch (e) { console.error('saveData:', e.message); }
 }
 
-function todayIST() {
-  const IST_OFFSET = 5.5 * 60 * 60 * 1000;
-  return new Date(Date.now() + IST_OFFSET).toISOString().substring(0,10);
+function getIST() {
+  return new Date(new Date().getTime() + 5.5 * 3600000);
 }
 
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-
-// ── LIKE API CALL ─────────────────────────────────────────────
-async function sendLikeAPI(uid, server) {
-  // Replace this URL with the actual FreeFire Like API endpoint you use
-  const url = `https://aryan-like-api.vercel.app/api/like?uid=${uid}&server=${server}`;
-  const res  = await fetch(url, { timeout: 15000 });
-  if (!res.ok) throw new Error(`API HTTP ${res.status}`);
-  return await res.json();
+function fmtIST() {
+  return getIST().toISOString().replace('T', ' ').substring(0, 19);
 }
 
-function recordEntry(data, uid, server, apiData, type) {
-  const IST_OFFSET = 5.5 * 60 * 60 * 1000;
-  const d = new Date(Date.now() + IST_OFFSET);
-  const pad = n => String(n).padStart(2,'0');
-  const timeStr = `${d.getUTCFullYear()}-${pad(d.getUTCMonth()+1)}-${pad(d.getUTCDate())} ${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}:${pad(d.getUTCSeconds())}`;
-  const dateStr = timeStr.substring(0,10);
-
-  const entry = {
-    time    : timeStr,
-    date    : dateStr,
-    uid     : String(uid),
-    nickname: apiData.PlayerNickname || uid,
-    server  : server,
-    before  : apiData.LikesbeforeCommand ?? 0,
-    after   : apiData.LikesafterCommand  ?? 0,
-    given   : apiData.LikesGivenByAPI    ?? 0,
-    type    : type,   // 'MANUAL' | 'AUTO'
-    status  : apiData.status === 1 ? 'SUCCESS' : 'FAILED'
-  };
-
-  data.history.unshift(entry);
-  if (data.history.length > 5000) data.history = data.history.slice(0, 5000);
-  recalcStats(data);
-  saveDB(data);
-  return entry;
+// ─── SELF PING (keeps Render free tier awake) ────────────────
+function startSelfPing() {
+  const url = process.env.RENDER_EXTERNAL_URL;
+  if (!url) { console.log('⚠️  No RENDER_EXTERNAL_URL set — self-ping disabled'); return; }
+  setInterval(async () => {
+    try {
+      await fetch(`${url}/api/status`);
+      console.log(`🏓 Self-ping OK [${fmtIST()} IST]`);
+    } catch (e) { console.error('Self-ping failed:', e.message); }
+  }, 10 * 60 * 1000); // every 10 minutes
+  console.log(`🏓 Self-ping started → ${url}/api/status`);
 }
 
-// ── ROUTES ────────────────────────────────────────────────────
+// ─── LIKE FUNCTION ───────────────────────────────────────────
+async function sendLike(uid, server, isAuto = false) {
+  const data = loadData();
+  const url = `https://sneha-like-api-ixc1.vercel.app/like?uid=${uid}&server_name=${server}`;
+  console.log(`[${fmtIST()} IST] ${isAuto ? '🤖 AUTO' : '👆 MANUAL'} like → UID:${uid} Server:${server}`);
 
-// Serve dashboard
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
+  try {
+    const res = await fetch(url, {
+      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' }
+    });
+    const apiData = await res.json();
 
-// Get all data
-app.get('/api/data', (req, res) => {
-  res.json(loadDB());
-});
+    const ist = getIST();
+    const timeStr = fmtIST();
+    const dateStr = ist.toISOString().substring(0, 10);
 
-// Server status
+    const entry = {
+      id: Date.now(),
+      time: timeStr,
+      date: dateStr,
+      uid: apiData.UID || uid,
+      nickname: apiData.PlayerNickname || '—',
+      server: server.toUpperCase(),
+      before: apiData.LikesbeforeCommand ?? '—',
+      after: apiData.LikesafterCommand ?? '—',
+      given: apiData.LikesGivenByAPI ?? 0,
+      type: isAuto ? 'AUTO' : 'MANUAL',
+      status: apiData.status === 1 ? 'SUCCESS' : 'FAILED'
+    };
+
+    data.history.unshift(entry);
+    if (data.history.length > 1000) data.history.pop();
+    data.stats.sessions = (data.stats.sessions || 0) + 1;
+    data.stats.total = (data.stats.total || 0) + (entry.given || 0);
+    if (data.stats.todayDate !== dateStr) { data.stats.today = 0; data.stats.todayDate = dateStr; }
+    data.stats.today = (data.stats.today || 0) + (entry.given || 0);
+    data.stats.lastRun = timeStr;
+    if (isAuto) data.stats.autoRuns = (data.stats.autoRuns || 0) + 1;
+
+    saveData(data);
+    console.log(`✅ ${entry.status} — ${entry.nickname} | Before:${entry.before} After:${entry.after} Given:+${entry.given}`);
+    return { ok: true, entry, apiData };
+  } catch (e) {
+    console.error(`❌ Like failed: ${e.message}`);
+    return { ok: false, error: e.message };
+  }
+}
+
+// ─── CRON (every minute, checks IST time) ────────────────────
+let cronJob = null;
+
+function startCron() {
+  if (cronJob) { cronJob.destroy(); cronJob = null; }
+  cronJob = cron.schedule('* * * * *', () => {
+    const data = loadData();
+    if (!data.schedule.enabled || !data.schedule.uid) return;
+    const ist = getIST();
+    const hh = String(ist.getHours()).padStart(2, '0');
+    const mm = String(ist.getMinutes()).padStart(2, '0');
+    if (`${hh}:${mm}` === (data.schedule.time || '06:00')) {
+      console.log(`⏰ CRON FIRED at ${hh}:${mm} IST`);
+      sendLike(data.schedule.uid, data.schedule.server, true);
+    }
+  });
+  console.log('✅ Cron scheduler running');
+}
+
+// ─── ROUTES ──────────────────────────────────────────────────
 app.get('/api/status', (req, res) => {
-  const data = loadDB();
-  const activeScheds = Object.values(data.schedules||{}).filter(s=>s.enabled).length;
+  const data = loadData();
   res.json({
-    uptime        : Math.floor(process.uptime()),
-    serverTime    : nowIST() + ' IST',
-    scheduleEnabled: activeScheds > 0,
-    activeSchedules: activeScheds,
-    scheduleTime  : 'per-UID',
-    totalRecords  : data.history.length,
-    totalLikes    : data.stats.total || 0,
-    cronRunning   : cronRunning
+    uptime: Math.floor(process.uptime()),
+    serverTime: fmtIST() + ' IST',
+    scheduleEnabled: data.schedule.enabled,
+    scheduleTime: data.schedule.time,
+    scheduleUID: data.schedule.uid,
+    totalRecords: data.history.length,
+    totalLikes: data.stats.total || 0
   });
 });
 
-// Send like (manual from browser)
-app.post('/api/like', async (req, res) => {
-  const { uid, server, type } = req.body;
-  if (!uid || !server) return res.json({ ok:false, error:'Missing uid or server' });
+app.get('/api/data', (req, res) => res.json(loadData()));
 
+app.post('/api/data', (req, res) => {
   try {
-    const apiData = await sendLikeAPI(uid, server);
-    const data  = loadDB();
-    const entry = recordEntry(data, uid, server, apiData, type || 'MANUAL');
-    res.json({ ok:true, apiData, entry });
-  } catch(e) {
-    res.json({ ok:false, error: e.message });
-  }
+    const current = loadData();
+    const updated = { ...current, ...req.body };
+    if (!req.body.history || req.body.history.length === 0) updated.history = current.history;
+    saveData(updated);
+    startCron();
+    res.json({ ok: true });
+  } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-// Save UIDs and schedules
-app.post('/api/uids', (req, res) => {
-  const { uids, schedules } = req.body;
-  const data = loadDB();
-  if (uids)      data.uids      = uids;
-  if (schedules) data.schedules = schedules;
-  saveDB(data);
-  res.json({ ok:true });
+app.post('/api/like', async (req, res) => {
+  const { uid, server } = req.body;
+  if (!uid || !server) return res.status(400).json({ error: 'Missing uid or server' });
+  const result = await sendLike(uid, server, false);
+  res.json(result);
 });
 
-// Save single schedule (legacy compat)
+app.get('/api/schedule', (req, res) => res.json(loadData().schedule));
+
 app.post('/api/schedule', (req, res) => {
-  const { enabled, time, uid, server } = req.body;
-  const data = loadDB();
-  data.schedule = { enabled, time, uid, server };
-  saveDB(data);
-  res.json({ ok:true });
-});
-
-// Clear history
-app.delete('/api/history', (req, res) => {
-  const data = loadDB();
-  data.history = [];
-  data.stats   = {};
-  saveDB(data);
-  res.json({ ok:true });
-});
-
-// ── SERVER-SIDE CRON ENGINE ───────────────────────────────────
-// Runs every 30 seconds. When a UID's schedule time matches current IST time,
-// it queues all matching UIDs and sends them one-by-one with 60s delay between each.
-// This runs on the SERVER — browser does NOT need to be open.
-
-const DELAY_BETWEEN_UIDS = 60 * 1000; // 60 seconds
-let cronRunning = false;
-const firedToday = {}; // { uid_id_YYYY-MM-DD: true }
-
-async function runCronQueue(targets) {
-  if (cronRunning) {
-    console.log('[CRON] Queue already running, skipping');
-    return;
-  }
-  cronRunning = true;
-  console.log(`[CRON] Starting queue for ${targets.length} UID(s)...`);
-
-  const data = loadDB();
-
-  for (let i = 0; i < targets.length; i++) {
-    const u  = targets[i];
-    const sc = data.schedules[u.id] || {};
-    const server = sc.server || u.server;
-
-    console.log(`[CRON] [${i+1}/${targets.length}] Sending like → UID: ${u.uid} (${u.nick}) Server: ${server}`);
-
-    try {
-      const apiData = await sendLikeAPI(u.uid, server);
-      const freshData = loadDB(); // reload in case browser changed data
-      const entry = recordEntry(freshData, u.uid, server, apiData, 'AUTO');
-      console.log(`[CRON] ✅ Success: +${entry.given} likes → ${entry.nickname} (total: ${entry.after})`);
-    } catch(e) {
-      console.error(`[CRON] ❌ Failed for UID ${u.uid}: ${e.message}`);
-      // Still record a FAILED entry so auto runs counter increments
-      const freshData = loadDB();
-      recordEntry(freshData, u.uid, server, {
-        PlayerNickname: u.nick,
-        LikesbeforeCommand: 0,
-        LikesafterCommand: 0,
-        LikesGivenByAPI: 0,
-        status: 0
-      }, 'AUTO');
-    }
-
-    // 60-second delay before next UID (skip after last)
-    if (i < targets.length - 1) {
-      console.log(`[CRON] ⏱ Waiting 60s before next UID (${targets[i+1].nick})...`);
-      await sleep(DELAY_BETWEEN_UIDS);
-    }
-  }
-
-  cronRunning = false;
-  console.log(`[CRON] ✅ Queue complete for ${targets.length} UID(s).`);
-}
-
-function startCron() {
-  console.log('[CRON] Scheduler started — checking every 30s (IST)');
-
-  setInterval(() => {
-    const data = loadDB();
-    const uids      = data.uids      || [];
-    const schedules = data.schedules || {};
-
-    if (!uids.length) return;
-
-    // Current IST hour:minute
-    const IST_OFFSET = 5.5 * 60 * 60 * 1000;
-    const nowIST_d   = new Date(Date.now() + IST_OFFSET);
-    const curH   = nowIST_d.getUTCHours();
-    const curM   = nowIST_d.getUTCMinutes();
-    const today  = nowIST_d.toISOString().substring(0,10);
-
-    const due = uids.filter(u => {
-      const sc = schedules[u.id];
-      if (!sc || !sc.enabled || !sc.time) return false;
-      const [h, m] = sc.time.split(':').map(Number);
-      const fireKey = `${u.id}_${today}`;
-      if (firedToday[fireKey]) return false; // already ran today
-      // Fire if current IST minute matches scheduled time (30s window = within same minute)
-      return curH === h && curM === m;
-    });
-
-    if (due.length > 0) {
-      // Mark all as fired so they don't re-trigger within the same minute
-      due.forEach(u => { firedToday[`${u.id}_${today}`] = true; });
-      console.log(`[CRON] ⏰ ${due.length} UID(s) due at ${String(curH).padStart(2,'0')}:${String(curM).padStart(2,'0')} IST → starting queue`);
-      runCronQueue(due); // async, non-blocking
-    }
-
-    // Clean up firedToday keys older than today to prevent memory leak
-    Object.keys(firedToday).forEach(k => {
-      if (!k.endsWith(today)) delete firedToday[k];
-    });
-
-  }, 30 * 1000); // check every 30 seconds
-}
-
-// ── START ─────────────────────────────────────────────────────
-app.listen(PORT, () => {
-  console.log(`\n╔══════════════════════════════════════╗`);
-  console.log(`║   FreeLike v3 Server — PORT ${PORT}      ║`);
-  console.log(`╚══════════════════════════════════════╝`);
-  console.log(`🌐 Dashboard: http://localhost:${PORT}`);
-  console.log(`📁 Data file: ${DB}`);
-  console.log(`⏰ Cron: runs every 30s, 60s delay between UIDs\n`);
+  const data = loadData();
+  data.schedule = { ...data.schedule, ...req.body };
+  saveData(data);
   startCron();
+  res.json({ ok: true, schedule: data.schedule });
+});
+
+app.delete('/api/history', (req, res) => {
+  const data = loadData();
+  data.history = [];
+  saveData(data);
+  res.json({ ok: true });
+});
+
+// ─── START ────────────────────────────────────────────────────
+app.listen(PORT, () => {
+  console.log(`🚀 FreeLike Server on port ${PORT}`);
+  const data = loadData();
+  console.log(`⏰ Schedule: ${data.schedule.enabled ? 'ON at ' + data.schedule.time + ' IST' : 'OFF'}`);
+  startCron();
+  startSelfPing();
 });
