@@ -460,18 +460,59 @@ async function saveSchedule() {
 function startCountdown(time) {
   if (cdInterval) clearInterval(cdInterval);
   function tick() {
-    const now = new Date();
-    const ist = new Date(now.getTime() + 5.5 * 3600000);
+    // Get current time as IST epoch (ms)
+    const nowUTC = Date.now();
+    const IST_OFFSET = 5.5 * 60 * 60 * 1000; // +5:30
+    const nowIST = nowUTC + IST_OFFSET; // ms since epoch in IST
+
+    // Parse schedule time
     const [h, m] = (time || '06:00').split(':').map(Number);
-    let next = new Date(ist); next.setHours(h, m, 0, 0);
-    if (next <= ist) next.setDate(next.getDate() + 1);
-    const diff = next - ist;
+
+    // Build today's target in IST as UTC epoch
+    const todayIST = new Date(nowIST); // date in IST
+    // Get IST date parts
+    const istDate = new Date(nowUTC);
+    const istHour = istDate.getUTCHours() + 5 + Math.floor((istDate.getUTCMinutes() + 30) / 60);
+    const istMin  = (istDate.getUTCMinutes() + 30) % 60;
+    const istDay  = istDate.getUTCDate() + (istHour >= 24 ? 1 : 0);
+    const realISTHour = istHour % 24;
+
+    // Target = today at h:m IST expressed as UTC epoch
+    let target = new Date(nowUTC);
+    target.setUTCHours(h - 5, m - 30, 0, 0); // convert IST to UTC
+    if (m < 30) { target.setUTCHours(h - 6, m + 30, 0, 0); }
+    // Simpler: target UTC = IST_target - IST_OFFSET
+    const targetUTC_ms = (() => {
+      // Today in UTC
+      const d = new Date(nowUTC);
+      // Set to target IST time: UTC = IST - 5:30
+      const targetH_utc = h - 5;
+      const targetM_utc = m - 30;
+      let tH = targetH_utc, tM = targetM_utc, dayOffset = 0;
+      if (tM < 0) { tM += 60; tH -= 1; }
+      if (tH < 0) { tH += 24; dayOffset = -1; }
+      const t = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() + dayOffset, tH, tM, 0, 0));
+      return t.getTime();
+    })();
+
+    let nextMs = targetUTC_ms;
+    if (nextMs <= nowUTC) nextMs += 86400000; // add 1 day if passed
+
+    const diff = nextMs - nowUTC;
     const hh = String(Math.floor(diff/3600000)).padStart(2,'0');
-    const mm = String(Math.floor((diff%3600000)/60000)).padStart(2,'0');
+    const mm2 = String(Math.floor((diff%3600000)/60000)).padStart(2,'0');
     const ss = String(Math.floor((diff%60000)/1000)).padStart(2,'0');
-    document.getElementById('countdown').textContent = `${hh}:${mm}:${ss}`;
+    document.getElementById('countdown').textContent = `${hh}:${mm2}:${ss}`;
+
+    // Show next run time in IST
+    const nextIST = new Date(nextMs + IST_OFFSET);
+    const yr = nextIST.getUTCFullYear();
+    const mo = String(nextIST.getUTCMonth()+1).padStart(2,'0');
+    const dy = String(nextIST.getUTCDate()).padStart(2,'0');
+    const hr = String(nextIST.getUTCHours()).padStart(2,'0');
+    const mn = String(nextIST.getUTCMinutes()).padStart(2,'0');
     document.getElementById('sched-detail').textContent =
-      `Next: ${next.toISOString().replace('T',' ').substring(0,16)} IST`;
+      `Next: ${yr}-${mo}-${dy} ${hr}:${mn} IST`;
   }
   tick(); cdInterval = setInterval(tick, 1000);
 }
@@ -619,8 +660,21 @@ function switchTab(name) {
 // ── CLOCK ─────────────────────────────────────────────────────
 function startClock() {
   function tick() {
-    const ist = new Date(new Date().getTime() + 5.5*3600000);
-    document.getElementById('clock').textContent = ist.toISOString().replace('T',' ').substring(0,19) + ' IST';
+    const now = new Date();
+    // IST = UTC + 5:30
+    const IST_OFFSET = 5 * 60 + 30; // minutes
+    const utcMin = now.getUTCHours() * 60 + now.getUTCMinutes() + IST_OFFSET;
+    const istH = Math.floor(utcMin / 60) % 24;
+    const istM = utcMin % 60;
+    const istS = now.getUTCSeconds();
+    const y = now.getUTCFullYear();
+    let d = now.getUTCDate(), mo = now.getUTCMonth() + 1;
+    // Handle day rollover
+    const totalH = now.getUTCHours() + (now.getUTCMinutes() + 30 >= 60 ? 1 : 0);
+    if (now.getUTCHours() * 60 + now.getUTCMinutes() + IST_OFFSET >= 1440) d += 1;
+    const pad = n => String(n).padStart(2,'0');
+    document.getElementById('clock').textContent =
+      `${y}-${pad(mo)}-${pad(d)} ${pad(istH)}:${pad(istM)}:${pad(istS)} IST`;
   }
   tick(); setInterval(tick, 1000);
 }
