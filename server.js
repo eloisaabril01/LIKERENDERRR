@@ -142,7 +142,7 @@ async function runCronQueue(dueuids) {
 }
 
 function startCron() {
-  if (cronJob) { cronJob.destroy(); cronJob = null; }
+  if (cronJob) { cronJob.stop(); cronJob = null; }
 
   cronJob = cron.schedule('* * * * *', () => {
     const data = loadData();
@@ -207,7 +207,6 @@ app.post('/api/uids', (req, res) => {
     if (req.body.uids !== undefined) data.uids = req.body.uids;
     if (req.body.schedules !== undefined) data.schedules = req.body.schedules;
     saveData(data);
-    startCron(); // restart cron so it picks up new schedules immediately
     const activeSchedules = Object.values(data.schedules || {}).filter(sc => sc && sc.enabled).length;
     console.log(`💾 UIDs saved: ${data.uids.length} UIDs, ${activeSchedules} active schedules`);
     res.json({ ok: true, uids: data.uids.length, activeSchedules });
@@ -226,7 +225,6 @@ app.post('/api/data', (req, res) => {
     if (req.body.stats !== undefined) current.stats = req.body.stats;
     // Never overwrite history from client (server is source of truth for history)
     saveData(current);
-    startCron();
     res.json({ ok: true });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
